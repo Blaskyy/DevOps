@@ -13,10 +13,15 @@ url = fs.readFileSync '../url', 'utf-8'
 scanOne = (host,next)->
   command = 'sudo nmap -sS -sU ' + host + ' -P0 | awk \'$2=="open" {print $1}\' | sed \'s/\\/...//g\' | xargs echo -n'
   exec command, (error, stdout, stderr) ->
-    db.ips.update {ip: host}, {$set: {port: stdout.split(' '), update: Date()}}, {upsert:true}, (err, docs) ->
-      if err then throw err
-      console.log host
-      next()
+    if stdout != '' or stdout != ' '
+      db.ips.update {ip: host}, {$set: {port: Number(i) for i in stdout.split(' '), update: Date()}}, {upsert:true}, (err, docs) ->
+        if err then throw err
+        console.log host
+    else
+      db.ips.update {ip: host}, {$set: {port: [], update: Date()}}, {upsert:true}, (err, docs) ->
+        if err then throw err
+        console.log host
+    next()
 
 http.get url, (res) ->
   source = ''
