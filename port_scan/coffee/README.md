@@ -1,4 +1,5 @@
-sudo pip install nodeenv
+sudo pip install nodeenv  
+https://pypi.python.org/pypi/nodeenv/
 
 ######Create new environment:
 $ nodeenv env
