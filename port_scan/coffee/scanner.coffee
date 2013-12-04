@@ -33,7 +33,7 @@ http.get url, (res) ->
       if err then throw err
       if docs != null
         if docs.ip not in iplst
-          db.ips.remove {ip: docs.ip}
+          db.ips.remove {'ip': docs.ip}
 
     #add jobs to q
     for ip in iplst
