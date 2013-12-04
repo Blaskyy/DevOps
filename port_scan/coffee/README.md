@@ -19,7 +19,8 @@ v0.10.22
 
 ######Start scan
 (env) $ which coffee            #do some check  
-(env) $ coffee scanner.coffee
+(env) $ coffee scanner.coffee  
+(env) $ time coffee scanner.coffee  #Timing
 
 ######Deactivate environment:
 (env) $ deactivate_node
