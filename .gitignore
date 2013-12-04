@@ -1,5 +1,6 @@
 *.py[cod]
 url
+*.swp
 
 # C extensions
 *.so
