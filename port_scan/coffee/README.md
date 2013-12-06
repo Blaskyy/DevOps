@@ -15,7 +15,7 @@ v0.10.22
 1.3.14
 
 ######Install requirements
-(env) $ npm install -g coffee-script qjobs mongojs
+(env) $ npm install -g coffee-script qjobs mongojs express eventproxy
 
 ######Start scan
 (env) $ which coffee            #do some check  
