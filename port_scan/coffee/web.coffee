@@ -87,8 +87,8 @@ app.get '/alarm/:port_tmp', (req, res) ->
       for i in docs
         do (i) ->
           body['data'][i.ip]={}
-          body['data'][i.ip]['value'] = (j for j in i.port when j not in ports)
-          if body['data'][i.ip]['value'].length == 0
+          body['data'][i.ip]['port'] = (j for j in i.port when j not in ports)
+          if body['data'][i.ip]['port'].length == 0
             body['data'][i.ip]['status'] = true
             ep.emit 'one_data'
           else
@@ -109,7 +109,7 @@ app.get '/wlst/:from-:to\::port_tmp', (req, res) ->
       for i in docs
         do (i) ->
           body['data'][i.ip]={}
-          body['data'][i.ip]['value'] = (j for j in i.port when j not in ports)
+          body['data'][i.ip]['port'] = (j for j in i.port when j not in ports)
           ep.emit 'one_data'
 
 app.get '/', (req, res) ->
@@ -118,17 +118,17 @@ app.get '/', (req, res) ->
   <form action="/" method="post">
   IP  <input type="text" name="ip_tmp" />
   port <input type="text" name="port_tmp" />
-  <input type="submit" value="Filter" />
+  <input type="submit" port="Filter" />
   </form>
   Usage:
   <p>只填写IP则返回该IP的端口信息,可填写格式为单个IP或IP段,如"192.168.1.1-192.168.1.255"</p>
   <p>只填写端口则返回开放该端口的IP列表,可填写格式为单个端口或端口段,如"22-53"</p>
   <p>若既填写IP也填写端口,则返回该IP段除了填写的端口之外开放的端口信息,可填写IP格式,单个IP或IP段,可填写端口格式为单个端口或用竖线"|"隔开的多个端口,如"22|80"</p>
   API:
-  <p>Filter ip: 127.0.0.1/fip/ipfrom-ipto</p>
-  <p>Filter port: 127.0.0.1/fport/portfrom-portto</p>
-  <p>White list: 127.0.0.1/wlst/ipfrom-ipto:22|53|80|500 (替换为要排除的端口)</p>
-  <p>Alarm data: 127.0.0.1/alarm/22|53|80|500 (替换为要排除的端口)</p>
+  <p>Filter ip: http://localhost/fip/ipfrom-ipto</p>
+  <p>Filter port: http://localhost/fport/portfrom-portto</p>
+  <p>White list: http://localhost/wlst/ipfrom-ipto:22|53|80|500 (替换为要排除的端口)</p>
+  <p>Alarm data: http://localhost/alarm/22|53|80|500 (替换为要排除的端口)</p>
   </center>'''
   res.end body
 
