@@ -41,19 +41,20 @@ app.get '/result', (req, res) ->
           ep.emit 'one_data'
 
 app.get '/fip/:from-:to', (req, res) ->
-  ep = new EventProxy()
-  ep.after 'one_ip', [ip2num(req.params.from)..ip2num(req.params.to)].length, ->
-    res.end(JSON.stringify body, null, 2)
   res.setHeader('Content-Type', 'application/json; charset=utf-8')
   body = {}
   body['data'] = {}
-  db.ips.find({'ip': {$in: num2ip(i) for i in [ip2num(req.params.from)..ip2num(req.params.to) ]}},{'_id': false}).forEach (err, doc) ->
+  db.ips.find {'ip': {$in: num2ip(i) for i in [ip2num(req.params.from)..ip2num(req.params.to) ]}},{'_id': false, 'update':false}, (err, docs) ->
     if err then throw err
-    if doc
-      body['data'][doc.ip] = doc.port
-      ep.emit 'one_ip'
-    else
-      ep.emit 'one_ip'
+    if docs
+      ep = new EventProxy()
+      ep.after 'one_ip', docs.length, ->
+        res.end(JSON.stringify body, null, 2)
+      for i in docs
+        do (i) ->
+          body['data'][i.ip] = {}
+          body['data'][i.ip]['port'] = i.port
+          ep.emit 'one_ip'
 
 app.get '/fport/:from-:to', (req, res) ->
   ep = new EventProxy()
