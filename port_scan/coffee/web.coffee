@@ -127,8 +127,8 @@ app.get '/', (req, res) ->
   API:
   <p>Filter ip: http://localhost/fip/ipfrom-ipto</p>
   <p>Filter port: http://localhost/fport/portfrom-portto</p>
-  <p>White list: http://localhost/wlst/ipfrom-ipto:22|53|80|500 (替换为要排除的端口)</p>
   <p>Alarm data: http://localhost/alarm/22|53|80|500 (替换为要排除的端口)</p>
+  <p>White list: http://localhost/wlst/ipfrom-ipto:22|53|80|500 (替换为要排除的端口)</p>
   </center>'''
   res.end body
 
