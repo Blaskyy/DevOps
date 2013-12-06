@@ -4,7 +4,8 @@ express = require 'express'
 EventProxy = require 'eventproxy'
 db = mongojs 'test', ['ips']
 app = express()
-app.use express.bodyParser()
+app.use express.json()
+app.use express.urlencoded()
 
 ip2num = (ipstr) ->
   ip = 0
