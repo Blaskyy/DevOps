@@ -4,6 +4,7 @@ express = require 'express'
 EventProxy = require 'eventproxy'
 db = mongojs 'test', ['ips']
 app = express()
+app.use express.bodyParser()
 
 ip2num = (ipstr) ->
   ip = 0
@@ -110,17 +111,39 @@ app.get '/wlst/:from-:to\::port_tmp', (req, res) ->
           body['data'][i.ip]['value'] = (j for j in i.port when j not in ports)
           ep.emit 'one_data'
 
+app.get '/', (req, res) ->
+  res.setHeader('Content-Type', 'text/html')
+  body = '''<center>
+  <form action="/" method="post">
+  IP  <input type="text" name="ip_tmp" />
+  port <input type="text" name="port_tmp" />
+  <input type="submit" value="Filter" />
+  </form>
+  Usage:
+  <p>只填写IP则返回该IP的端口信息,可填写格式为单个IP或IP段,如"192.168.1.1-192.168.1.255"</p>
+  <p>只填写端口则返回开放该端口的IP列表,可填写格式为单个端口或端口段,如"22-53"</p>
+  <p>若既填写IP也填写端口,则返回该IP段除了填写的端口之外开放的端口信息,可填写IP格式,单个IP或IP段,可填写端口格式为单个端口或用竖线"|"隔开的多个端口,如"22|80"</p>
+  </center>'''
+  res.end body
 
-
-
-
-
-
-
-
-
-
-
+app.post '/', (req, res) ->
+  ip_tmp = req.body.ip_tmp if req.body.ip_tmp?
+  port_tmp = req.body.port_tmp if req.body.port_tmp?
+  if ip_tmp != '' and port_tmp == ''
+    ips = ip_tmp.split '-'
+    if ips.length == 1
+      res.redirect "/fip/#{ips[0]}-#{ips[0]}"
+    else
+      res.redirect "/fip/#{ips[0]}-#{ips[1]}"
+  else if ip_tmp == '' and port_tmp != ''
+    ports = port_tmp.split '-'
+    if ports.length == 1
+      res.redirect "/fport/#{ports[0]}-#{ports[0]}"
+    else
+      res.redirect "/fport/#{ports[0]}-#{ports[1]}"
+  else
+    ips = ip_tmp.split '-'
+    res.redirect "/wlst/#{ips[0]}-#{ips[1]}:#{port_tmp}"
 
 app.listen(3000)
 
