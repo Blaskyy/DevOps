@@ -69,9 +69,7 @@ app.get '/fport/:from-:to', (req, res) ->
         if err then throw err
         if docs.length != 0
           body['data'][i] = (j['ip'] for j in docs)
-          ep.emit 'one_port'
-        else
-          ep.emit 'one_port'
+        ep.emit 'one_port'
 
 app.get '/alarm/:port_tmp', (req, res) ->
   ports = (Number(i) for i in req.params.port_tmp.split '|')
@@ -90,10 +88,9 @@ app.get '/alarm/:port_tmp', (req, res) ->
           body['data'][i.ip]['port'] = (j for j in i.port when j not in ports)
           if body['data'][i.ip]['port'].length == 0
             body['data'][i.ip]['status'] = true
-            ep.emit 'one_data'
           else
             body['data'][i.ip]['status'] = false
-            ep.emit 'one_data'
+          ep.emit 'one_data'
 
 app.get '/wlst/:from-:to\::port_tmp', (req, res) ->
   ports = (Number(i) for i in req.params.port_tmp.split '|')
