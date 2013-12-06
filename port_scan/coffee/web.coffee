@@ -24,7 +24,7 @@ num2ip = (ipnum) ->
   return ipdots.join('.')
 
 app.get '/result', (req, res) ->
-  res.setHeader('Content-Type', 'application/json')
+  res.setHeader('Content-Type', 'application/json; charset=utf-8')
   body = {}
   body['data']={}
   db.ips.find {},{'_id': false}, (err, docs) ->
@@ -44,7 +44,7 @@ app.get '/fip/:from-:to', (req, res) ->
   ep = new EventProxy()
   ep.after 'one_ip', [ip2num(req.params.from)..ip2num(req.params.to)].length, ->
     res.end(JSON.stringify body, null, 2)
-  res.setHeader('Content-Type', 'application/json')
+  res.setHeader('Content-Type', 'application/json; charset=utf-8')
   body = {}
   body['data'] = {}
   db.ips.find({'ip': {$in: num2ip(i) for i in [ip2num(req.params.from)..ip2num(req.params.to) ]}},{'_id': false}).forEach (err, doc) ->
@@ -59,7 +59,7 @@ app.get '/fport/:from-:to', (req, res) ->
   ep = new EventProxy()
   ep.after 'one_port', [Number(req.params.from)..Number(req.params.to)].length, ->
     res.end(JSON.stringify body, null, 2)
-  res.setHeader('Content-Type', 'application/json')
+  res.setHeader('Content-Type', 'application/json; charset=utf-8')
   body = {}
   body['data'] = {}
   for i in [Number(req.params.from)..Number(req.params.to)]
@@ -74,7 +74,7 @@ app.get '/fport/:from-:to', (req, res) ->
 
 app.get '/alarm/:port_tmp', (req, res) ->
   ports = (Number(i) for i in req.params.port_tmp.split '|')
-  res.setHeader('Content-Type', 'application/json')
+  res.setHeader('Content-Type', 'application/json; charset=utf-8')
   body = {}
   body['data'] = {}
   db.ips.find {}, {'_id': false, 'update': false}, (err,docs) ->
@@ -96,7 +96,7 @@ app.get '/alarm/:port_tmp', (req, res) ->
 
 app.get '/wlst/:from-:to\::port_tmp', (req, res) ->
   ports = (Number(i) for i in req.params.port_tmp.split '|')
-  res.setHeader('Content-Type', 'application/json')
+  res.setHeader('Content-Type', 'application/json; charset=utf-8')
   body = {}
   body['data'] = {}
   db.ips.find {'ip': {$in : num2ip(i) for i in [ip2num(req.params.from)..ip2num(req.params.to)]}}, {'_id': false, 'update': false}, (err,docs) ->
@@ -112,7 +112,7 @@ app.get '/wlst/:from-:to\::port_tmp', (req, res) ->
           ep.emit 'one_data'
 
 app.get '/', (req, res) ->
-  res.setHeader('Content-Type', 'text/html')
+  res.setHeader('Content-Type', 'text/html; charset=utf-8')
   body = '''<center>
   <form action="/" method="post">
   IP  <input type="text" name="ip_tmp" />
@@ -123,6 +123,11 @@ app.get '/', (req, res) ->
   <p>只填写IP则返回该IP的端口信息,可填写格式为单个IP或IP段,如"192.168.1.1-192.168.1.255"</p>
   <p>只填写端口则返回开放该端口的IP列表,可填写格式为单个端口或端口段,如"22-53"</p>
   <p>若既填写IP也填写端口,则返回该IP段除了填写的端口之外开放的端口信息,可填写IP格式,单个IP或IP段,可填写端口格式为单个端口或用竖线"|"隔开的多个端口,如"22|80"</p>
+  API:
+  <p>Filter ip: 127.0.0.1/fip/ipfrom-ipto</p>
+  <p>Filter port: 127.0.0.1/fport/portfrom-portto</p>
+  <p>White list: 127.0.0.1/wlst/ipfrom-ipto:22|53|80|500 (替换为要排除的端口)</p>
+  <p>Alarm data: 127.0.0.1/alarm/22|53|80|500 (替换为要排除的端口)</p>
   </center>'''
   res.end body
 
