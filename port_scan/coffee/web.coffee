@@ -119,12 +119,13 @@ app.get '/', (req, res) ->
   <input type="submit" port="Filter" />
   </form>
   Usage:
-  <p>只填写端口则返回开放该端口的IP列表,可填写格式为单个端口或端口段,如"22-53"</p>
+  <p>只填写端口格式为单个端口或端口段,如"22-53",则返回开放该端口段的IP</p>
+  <p>只填写端口格式为用竖线'|'隔开的多个端口或单个端口+'|',如"22|53"或"22|",则返回所有主机除了列出的端口以外开放的端口</p>
   <p>只填写IP则返回该IP的端口信息,可填写格式为单个IP或IP段,如"192.168.1.1-192.168.1.255"</p>
   <p>若既填写IP也填写端口,则返回该IP段除了填写的端口之外开放的端口信息,可填写IP格式,单个IP或IP段,可填写端口格式为单个端口或用竖线"|"隔开的多个端口,如"22|80"</p>
   API:
-  <p>Filter ip: http://localhost/fip?from=192.168.1.1&to=192.168.1.254</p>
   <p>Filter port: http://localhost/fport?from=22&to=80</p>
+  <p>Filter ip: http://localhost/fip?from=192.168.1.1&to=192.168.1.254</p>
   <p>Alarm data: http://localhost/alarm?ports=22|53|80|500 (替换为要排除的端口)</p>
   <p>White list: http://localhost/wlst?from=192.168.1.1&to=192.168.1.254&ports=22|53|80|500 (替换为要排除的端口)</p>
   </center>'''
@@ -140,11 +141,14 @@ app.post '/', (req, res) ->
     else
       res.redirect "/fip?from=#{ips[0]}&to=#{ips[1]}"
   else if ip_tmp == '' and port_tmp != ''
-    ports = port_tmp.split '-'
-    if ports.length == 1
-      res.redirect "/fport?from=#{ports[0]}&to=#{ports[0]}"
+    if port_tmp.indexOf('|') >= 0
+      res.redirect "/alarm?ports=#{port_tmp}"
     else
-      res.redirect "/fport?from=#{ports[0]}&to=#{ports[1]}"
+      ports = port_tmp.split '-'
+      if ports.length == 1
+        res.redirect "/fport?from=#{ports[0]}&to=#{ports[0]}"
+      else
+        res.redirect "/fport?from=#{ports[0]}&to=#{ports[1]}"
   else
     ips = ip_tmp.split '-'
     res.redirect "/wlst?from=#{ips[0]}&to=#{ips[1]}&ports=#{port_tmp}"
