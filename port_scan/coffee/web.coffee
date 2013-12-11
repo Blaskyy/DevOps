@@ -153,5 +153,6 @@ app.post '/', (req, res) ->
     ips = ip_tmp.split '-'
     res.redirect "/wlst?from=#{ips[0]}&to=#{ips[1]}&ports=#{port_tmp}"
 
-app.listen(3000)
+app.listen 3000, ->
+  console.log 'Server is listening on port 3000'
 
