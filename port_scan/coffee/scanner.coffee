@@ -11,7 +11,7 @@ iplst = []
 url = fs.readFileSync '../url', 'utf-8'
 
 scanOne = (host,next)->
-  command = 'sudo nmap -sS -sU ' + host + ' -P0 | awk \'$2=="open" {print $1}\' | sed \'s/\\/...//g\' | xargs echo -n'
+  command = 'sudo nmap -sS -sU ' + host + ' -P0 | awk \'$2=="open" {print $1}\' | sed \'s/\\/...//g\' | sort | uniq | xargs echo -n'
   exec command, (error, stdout, stderr) ->
     db.ips.update {ip: host}, {$set: {port: Number(i) for i in stdout.split(' ') when Number(i) > 0, update: Date()}}, {upsert:true}, (err, docs) ->
       if err then throw err
